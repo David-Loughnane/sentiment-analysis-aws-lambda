@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BUCKET="YOUR_BUCKET_NAME" # bucket name
+BUCKET="mydrive-sandbox-hackday/ds-lambda-api" # bucket name
+
 FILENAME="deployment-package.zip" # upload key
 TMP_FOLDER="/tmp/lambda-env-tmp/" # will be cleaned
 OUTPUT_FOLDER="/tmp/lambda-env/" # will be cleaned

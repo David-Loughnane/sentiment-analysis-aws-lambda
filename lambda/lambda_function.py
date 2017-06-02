@@ -2,40 +2,53 @@
 
 import gzip
 import pickle
+import numpy as np
+#import boto3
 
-CLASSES = {
-    0: "negative",
-    4: "positive"
-}
 
-MODEL_FILE = 'model.dat.gz'
+MODEL_FILE = 'mnist_model.dat.gz'
 with gzip.open(MODEL_FILE, 'rb') as f:
     MODEL = pickle.load(f)
 
-# pylint: disable=unused-argument
+
+
 def lambda_handler(event, context=None):
     """
-        Validate parameters and call the recommendation engine
+        Validate parameters and call the prediction model
         @event: API Gateway's POST body;
         @context: LambdaContext instance;
     """
 
     # input validation
     assert event, "AWS Lambda event parameter not provided"
-    text = event.get("text")  # query text
-    assert isinstance(text, basestring)
+
+    image = event.get("image")
+    assert isinstance(image, list)
+    image_array = np.array(list)
 
     # call predicting function
-    return predict(text)
+    prediction = predict_mnist(image)
+
+    '''
+    label = event.get("label")
+    assert isinstance(label, int)
+
+    client = boto3.client('dynamodb')
+    try:
+        dynamodb.put_item(TableName=imageClassifications, Item={'image': image, 'label': lablel, 'prediction' : prediction})
+    except Exception, e:
+        print(e)
+    '''
+
+    return prediction
 
 
-def predict(text):
+
+def predict_mnist(pixel_array):
     """
-        Predict the sentiment of a string
-        @text: string - the string to be analyzed
+        Predict the number (0-9) from an input image
+        @pixel_array:  - numpy array of image pixel values (0-255)
     """
+    y_predicted = MODEL.predict(pixel_array)
 
-    x_vector = MODEL.vectorizer.transform([text])
-    y_predicted = MODEL.predict(x_vector)
-
-    return CLASSES.get(y_predicted[0])
+    return y_predicted
