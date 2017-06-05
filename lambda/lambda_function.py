@@ -3,7 +3,7 @@
 import gzip
 import pickle
 import numpy as np
-#import boto3
+import boto3
 
 
 MODEL_FILE = 'mnist_model.dat.gz'
@@ -29,16 +29,17 @@ def lambda_handler(event, context=None):
     # call predicting function
     prediction = predict_mnist(image)
 
-    '''
-    label = event.get("label")
-    assert isinstance(label, int)
+    
+    label = int(event.get("label"))
+    #assert isinstance(label, int)
 
     client = boto3.client('dynamodb')
+    
     try:
-        dynamodb.put_item(TableName=imageClassifications, Item={'image': image, 'label': lablel, 'prediction' : prediction})
+        dynamodb.put_item(TableName=imageClassifications, Item={'image': image, 'label': label, 'prediction' : prediction})
     except Exception, e:
         print(e)
-    '''
+
 
     return prediction
 
@@ -51,4 +52,4 @@ def predict_mnist(pixel_array):
     """
     y_predicted = MODEL.predict(pixel_array)
 
-    return y_predicted
+    return int(y_predicted[0])
